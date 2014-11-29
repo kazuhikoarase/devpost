@@ -1,0 +1,112 @@
+
+BODY {
+  padding: 0px;
+  margin: 0px;
+}
+
+BODY, TH, TD, INPUT {
+  font-family: arial, sans-serif;
+  font-size: 11pt;
+  color: #000000;
+}
+
+.title A {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.title A:hover {
+  background-color: #666666;
+}
+
+.title {
+  margin: 0px;
+  padding: 8px;
+  font-size: 16pt;
+  font-weight: bold;
+  color: #ffffff;
+  background-color: #000000;
+}
+
+.content {
+  padding: 8px;	
+}
+
+TABLE.mbox {
+  border-collapse: collapse;
+}
+
+TABLE.mbox, TABLE.mbox TH, TABLE.mbox TD {
+  border-style: none;
+}
+
+TABLE.mbox TH, TABLE.mbox TD {
+  padding: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+TABLE.mbox TH {
+  background-color: #cccccc;	
+}
+
+TABLE.mbox TR.row0 {
+  background-color: #f7f7f7;
+}
+
+TABLE.mbox TR.row1 {
+  background-color: #f0f0f0;
+}
+
+TABLE.mbox TR {
+  cursor: default;
+}
+
+.current-row {
+  background-color: #ffeecc;
+}
+
+.button {
+  margin: 4px;
+  padding: 4px 8px 4px 8px;
+  color: #ffffff;
+  background-color: #998877;
+  border-style: none;
+  text-decoration: none;
+  cursor: default;
+  display: inline-block;
+  -webkit-border-radius: 4px; 
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+}
+
+:hover.button {
+  background-color: #aa9988;
+}
+
+:disabled.button {
+  color: #cccccc;
+  background-color: #aaaaaa;
+}
+
+.checkbox, .checkbox-incomplete, .checkbox-checked {
+  fill: #ffffff;
+  stroke: none;
+  margin: 4px;
+}
+
+.checkbox .checkbox-sign {
+  stroke: none;
+  fill: none;
+}
+
+.checkbox-incomplete .checkbox-sign {
+  stroke: #cccccc;
+  stroke-width: 2px;
+}
+
+.checkbox-checked .checkbox-sign {
+  stroke: #666666;
+  stroke-width: 2px;
+}

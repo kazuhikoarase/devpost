@@ -1,0 +1,29 @@
+
+apply plugin: 'war'
+apply plugin: 'eclipse'
+
+sourceCompatibility = 1.6
+version = '1.0'
+
+compileJava.options.encoding = 'UTF-8'
+
+uploadArchives {
+    repositories {
+       flatDir {
+           dirs 'repos'
+       }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    providedCompile 'javax.servlet:javax.servlet-api:3.0.1'
+    providedCompile "javax.servlet:jsp-api:2.0"
+    compile 'javax.mail:mail:1.4'
+    compile "javax.servlet:jstl:1.2"
+    testCompile "junit:junit:4.11"
+}
+
