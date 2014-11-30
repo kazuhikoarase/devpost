@@ -4,7 +4,7 @@ BODY {
   margin: 0px;
 }
 
-BODY, TH, TD, INPUT {
+BODY, TH, TD, INPUT, BUTTON {
   font-family: arial, sans-serif;
   font-size: 11pt;
   color: #000000;
