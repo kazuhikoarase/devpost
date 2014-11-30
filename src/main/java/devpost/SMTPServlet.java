@@ -11,7 +11,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import javax.mail.Message.RecipientType;
 import javax.mail.internet.InternetAddress;
@@ -21,6 +23,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 
 /**
  * SMTPServlet
@@ -53,6 +56,14 @@ public class SMTPServlet extends HttpServlet {
         HttpServletRequest request,
         HttpServletResponse response
     ) throws ServletException, IOException {
+
+        final ResourceBundle.Control control =
+                new XMLResourceBundle.Control();
+        request.setAttribute("devpostMessage", 
+                new LocalizationContext(
+                ResourceBundle.getBundle("message",
+                request.getLocale(), control) ) );
+        
         try {
             if ("/get".equals(request.getPathInfo() ) ) {
                 download(request, response);

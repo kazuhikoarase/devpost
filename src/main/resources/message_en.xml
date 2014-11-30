@@ -2,5 +2,14 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
   <comment></comment>
+  <entry key="msg.storedTo">Stored to:</entry>
+  <entry key="msg.sentFrom">Sent from</entry>
+  <entry key="msg.sender">Sender</entry>
   <entry key="msg.subject">Subject</entry>
+  <entry key="msg.lastSentDate">Last sent date</entry>
+  <entry key="msg.sentDate">Sent date</entry>
+  <entry key="msg.rcptTo">Rcpt to</entry>
+  <entry key="msg.delete">Delete</entry>
+  <entry key="msg.view">View</entry>
+  <entry key="msg.download">Download</entry>
 </properties>
