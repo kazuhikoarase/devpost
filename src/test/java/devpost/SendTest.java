@@ -41,6 +41,8 @@ public class SendTest {
     private final String mailEncoding_ja = "ISO-2022-JP";
 
     protected Date getSentDate(int hour) throws Exception {
+        return new Date();
+        /*
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, 2014);
         cal.set(Calendar.MONTH, 0);
@@ -49,6 +51,7 @@ public class SendTest {
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         return cal.getTime();
+        */
     }
 
     @Test
