@@ -2,28 +2,39 @@
 <jsp:root xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions">
-<jsp:directive.page import="javax.mail.internet.MimeMessage"/>
-<jsp:scriptlet><![CDATA[
+
+  <jsp:directive.page import="javax.mail.internet.MimeMessage"/>
+
+  <jsp:scriptlet><![CDATA[
 final MimeMessage message = (MimeMessage)request.getAttribute("message");
 final String contentType = message.getContentType().
-	toLowerCase().replaceAll(";.+$", "").trim();
+  toLowerCase().replaceAll(";.+$", "").trim();
 pageContext.setAttribute("contentType", contentType);
-]]></jsp:scriptlet>
-<c:choose>
-  <c:when test="${contentType == 'text/plain' or contentType == 'text/html'}">
-<jsp:scriptlet><![CDATA[
+  ]]></jsp:scriptlet>
+
+  <c:choose>
+    <c:when test="${contentType eq 'text/plain' or contentType eq 'text/html'}">
+      <jsp:scriptlet><![CDATA[
 response.setContentType(message.getContentType() );
 response.getWriter().write(message.getContent().toString() );
-]]></jsp:scriptlet>
-  </c:when>
-  <c:otherwise>
-  <html>
-  <body>
-  <c:out value="${contentType}" />
-  </body>
-  </html>
-  </c:otherwise>
-</c:choose>
+      ]]></jsp:scriptlet>
+    </c:when>
+    <c:otherwise>
+      <jsp:scriptlet><![CDATA[
+response.setContentType("text/html;charset=UTF-8");
+      ]]></jsp:scriptlet>
+      <jsp:text><![CDATA[<!doctype html>]]></jsp:text>
+      <html>
+        <head>
+          <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+          <title><c:out value="${contentType}" /></title>
+        </head>
+        <body>
+          <c:out value="${contentType}" />
+        </body>
+      </html>
+    </c:otherwise>
+  </c:choose>
 
 </jsp:root>
 

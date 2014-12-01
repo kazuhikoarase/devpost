@@ -5,7 +5,6 @@
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 >
   <jsp:directive.page import="java.util.Map"/>
-  <jsp:directive.page contentType="text/html;charset=UTF-8" />
 
   <jsp:scriptlet><![CDATA[
     pageContext.setAttribute("groupMboxEntrySet", 
@@ -17,68 +16,78 @@
   </h1>
 
   <div class="content">
-    <p>
-    <fmt:message bundle="${devpostMessage}" key="msg.storedTo" />
-    <c:out value="${mboxDir.canonicalPath}"/>
-    </p>
-    <script type="text/javascript"><![CDATA[
-$(function() {
-  $('.msg-subject').each(function() {
-    $(this).attr('title', $(this).text() );
-  });
-  $('.rcptTo').click(function(event) {
-    location.href = '?rcptTo=' + encodeURIComponent($(this).attr('rcptTo') );
-  });
-  $('.rcptTo').on('mouseover', function(event) {
-    $(this).find('TD').addClass('current-row');
-  });
-  $('.rcptTo').on('mouseout', function(event) {
-    $(this).find('TD').removeClass('current-row');
-  });
-});
-    ]]></script>
-    <table class="mbox" style="table-layout: fixed; width:960px;">
-    <colgroup>
-      <col style="width:100px;"/>
-      <col style="width:160px;"/>
-      <col/>
-      <col style="width:160px;"/>
-      <col style="width:220px;"/>
-    </colgroup>
-    <tbody>
-    <tr>
-    <th><fmt:message bundle="${devpostMessage}" key="msg.sentFrom" /></th>
-    <th><fmt:message bundle="${devpostMessage}" key="msg.sender" /></th>
-    <th><fmt:message bundle="${devpostMessage}" key="msg.subject" /></th>
-    <th><fmt:message bundle="${devpostMessage}" key="msg.lastSentDate" /></th>
-    <th><fmt:message bundle="${devpostMessage}" key="msg.rcptTo" /></th>
-    </tr>
-    <c:forEach var="msgEntry" items="${groupMboxEntrySet}" varStatus="msgStat">
-    <c:set var="msg" value="${msgEntry.value[0]}"/>
-    <c:set var="rcptTo"><c:out value="${msgEntry.key}"/></c:set>
-    <tr class="rcptTo row${msgStat.index mod 2}" rcptTo="${rcptTo}" >
-      <td>
-          <c:out value="${msg.serverAddr}"/>
-      </td>
-      <td>
-        <c:forEach var="user" items="${msg.from}">
-          <c:out value="${user.address}"/>
-        </c:forEach>
-      </td>
-      <td class="msg-subject"><c:out value="${msg.subject}"/></td>
-      <td><c:out value="${msg.sentDate}"/></td>
-      <td>
-        <c:forEach var="user" items="${msg.rcptTo}">
-          <c:out value="${user.address}"/>
-          <jsp:text> (</jsp:text>
-          <c:out value="${fn:length(msgEntry.value) }"/>
-          <jsp:text>)</jsp:text>
-        </c:forEach>
-      </td>
-    </tr>
-    </c:forEach>
-    </tbody>
+
+    <table>
+      <tr>
+        <td>
+          <fmt:message bundle="${devpostMessage}" key="msg.SMTPServer" />
+        </td>
+        <td>
+          <c:out value="${pageContext.request.serverName}"/>
+          <jsp:text>:</jsp:text><c:out value="${port}"/>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <fmt:message bundle="${devpostMessage}" key="msg.mailboxDir" />
+        </td>
+        <td>
+          <c:out value="${mboxDir.canonicalPath}"/>
+        </td>
+      </tr>
     </table>
+
+    <c:if test="${empty groupMboxEntrySet}">
+      <fmt:message bundle="${devpostMessage}" key="noMsg" />
+    </c:if>
+
+    <c:if test="${not empty groupMboxEntrySet}">
+      <c:url var="scriptUrl" value="/assets/list_all.js" />
+      <script type="text/javascript" src="${scriptUrl}"><jsp:text/></script>
+      <table class="mbox" style="table-layout: fixed; width:960px;">
+        <colgroup>
+          <col style="width:100px;"/>
+          <col style="width:160px;"/>
+          <col/>
+          <col style="width:160px;"/>
+          <col style="width:220px;"/>
+        </colgroup>
+        <tbody>
+          <tr>
+            <th><fmt:message bundle="${devpostMessage}" key="msg.sentFrom" /></th>
+            <th><fmt:message bundle="${devpostMessage}" key="msg.sender" /></th>
+            <th><fmt:message bundle="${devpostMessage}" key="msg.subject" /></th>
+            <th><fmt:message bundle="${devpostMessage}" key="msg.lastSentDate" /></th>
+            <th><fmt:message bundle="${devpostMessage}" key="msg.rcptTo" /></th>
+          </tr>
+          <c:forEach var="msgEntry" items="${groupMboxEntrySet}" varStatus="msgStat">
+            <c:set var="msg" value="${msgEntry.value[0]}"/>
+            <c:set var="rcptTo"><c:out value="${msgEntry.key}"/></c:set>
+            <tr class="rcptTo row${msgStat.index mod 2}" rcptTo="${rcptTo}" >
+              <td>
+                  <c:out value="${msg.serverAddr}"/>
+              </td>
+              <td>
+                <c:forEach var="user" items="${msg.from}">
+                  <c:out value="${user.address}"/>
+                </c:forEach>
+              </td>
+              <td class="msg-subject"><c:out value="${msg.subject}"/></td>
+              <td><c:out value="${msg.sentDate}"/></td>
+              <td>
+                <c:forEach var="user" items="${msg.rcptTo}">
+                  <c:out value="${user.address}"/>
+                  <jsp:text> (</jsp:text>
+                  <c:out value="${fn:length(msgEntry.value) }"/>
+                  <jsp:text>)</jsp:text>
+                </c:forEach>
+              </td>
+            </tr>
+          </c:forEach>
+        </tbody>
+      </table>
+    </c:if>
+
   </div>
 
 </jsp:root>

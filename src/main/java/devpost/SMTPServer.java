@@ -2,21 +2,17 @@ package devpost;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
-import java.io.FilenameFilter;
 import java.io.InputStream;
-import java.net.ServerSocket;
-import java.net.SocketException;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
@@ -25,68 +21,23 @@ import javax.mail.internet.MimeMessage;
  * SMTPServer
  * @author Kazuhiko Arase
  */
-public class SMTPServer {
+public class SMTPServer extends BaseServer {
 
     private static final Session session =
             Session.getInstance(new Properties() );
 
-    private static final Date NULL_DATE = new Date(0);
+    private static final Date NULL_DATE = new Date(0L);
 
-    private final Logger logger = Logger.getLogger(getClass().getName() );
-
-    private ServerSocket ss = null;
-    private ExecutorService es = null;
-
-    private final int port;
     private final File mboxDir;
 
     public SMTPServer(final int port, final File mboxDir) {
-        this.port = port;
+        super("devpost", port);
         this.mboxDir = mboxDir;
     }
 
-    public void start() {
-
-        es = Executors.newCachedThreadPool();
-        es.execute(new Runnable() {
-            public void run() {
-                try {
-                    ss = new ServerSocket(port);
-                    while (true) {
-                        es.execute(new SMTPConnection(ss.accept(),
-                                session, mboxDir) );
-                    }
-                } catch(SocketException e) {
-                    // closed.
-                } catch(RuntimeException e) {
-                    throw e;
-                } catch(Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        } );
-        logger.info("devpost server start at port " + port);
-    }
-
-    public void shutdown() {
-        try {
-            if (ss != null) {
-                ss.close();
-            }
-        } catch(RuntimeException e) {
-            throw e;
-        } catch(Exception e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            es.shutdown();
-            es.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-        } catch(RuntimeException e) {
-            throw e;
-        } catch(Exception e) {
-            throw new RuntimeException(e);
-        }
-        logger.info("devpost server shutdown");
+    @Override
+    protected Runnable createSocketTask(Socket socket) throws Exception {
+        return new SMTPConnection(socket, session, mboxDir);
     }
 
     public MimeMessage getMessage(String msgId) throws Exception {
@@ -96,26 +47,32 @@ public class SMTPServer {
 
     protected List<MimeMessage> getAllMessages() {
         List<MimeMessage> messages = new ArrayList<MimeMessage>();
-        for (File file : mboxDir.listFiles(new FilenameFilter() {
+        for (File file : mboxDir.listFiles(new FileFilter() {
                     @Override
-                    public boolean accept(File dir, String name) {
-                        return name.endsWith(".eml");
+                    public boolean accept(File file) {
+                        return file.isFile() &&
+                                file.getName().endsWith(".eml");
                     }
                 }) ) {
             try {
                 messages.add(loadMessage(file) );
             } catch(Exception e) {
                 // ignore
+                logger.log(Level.INFO, e.getMessage(), e);
             }
         }
         Collections.sort(messages, new Comparator<MimeMessage>() {
             @Override
             public int compare(final MimeMessage o1, final MimeMessage o2) {
-                Date d1 = getSentDate(o1);
-                Date d2 = getSentDate(o2);
-                d1 = (d1 != null)? d1 : NULL_DATE;
-                d2 = (d2 != null)? d2 : NULL_DATE;
-                return -d1.compareTo(d2);
+                return -getSentDate(o1).compareTo(getSentDate(o2) );
+            }
+            protected Date getSentDate(MimeMessage msg) {
+                Date date = null;
+                try {
+                    date = msg.getSentDate();
+                } catch(Exception e) {
+                }
+                return date != null? date : NULL_DATE;
             }
         });
         return messages;
@@ -125,14 +82,6 @@ public class SMTPServer {
         String filename = Util.getFilenameByMsgId(msgId);
         File file = new File(mboxDir, filename);
         file.delete();
-    }
-
-    protected Date getSentDate(MimeMessage msg) {
-        try {
-            return msg.getSentDate();
-        } catch(Exception e) {
-            return null;
-        }
     }
 
     protected MimeMessage loadMessage(File file) throws Exception {

@@ -2,7 +2,8 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
   <comment></comment>
-  <entry key="msg.storedTo">保管先:</entry>
+  <entry key="msg.SMTPServer">SMTPサーバー:</entry>
+  <entry key="msg.mailboxDir">メールボックス ディレクトリ:</entry>
   <entry key="msg.sentFrom">送信元</entry>
   <entry key="msg.sender">差出人</entry>
   <entry key="msg.subject">件名</entry>
@@ -10,6 +11,6 @@
   <entry key="msg.sentDate">送信日時</entry>
   <entry key="msg.rcptTo">宛先</entry>
   <entry key="msg.delete">削除</entry>
-  <entry key="msg.view">View</entry>
   <entry key="msg.download">Download</entry>
+  <entry key="noMsg">メッセージがみつかりません。</entry>
 </properties>

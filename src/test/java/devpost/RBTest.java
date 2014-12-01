@@ -18,7 +18,7 @@ public class RBTest {
     }
 
     @Test
-    public void rb_jp() {
+    public void rb_ja() {
         ResourceBundle.Control control =
                 new XMLResourceBundle.Control();
         ResourceBundle rb = ResourceBundle.getBundle("message",
