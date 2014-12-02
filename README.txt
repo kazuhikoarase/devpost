@@ -9,5 +9,6 @@ Licensed under the MIT license:
 
 DevPost is a tiny smtp server for developers. 
 The real smtp server rejects mail like a spam for security reasons. 
-Although it's a matter of course, is not useful when testing mail sending. 
+Although it's a matter of course, is not useful when try to send a mail
+while testing.
 DevPost accepts all the mails without exception. 
