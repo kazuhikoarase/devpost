@@ -7,8 +7,12 @@
 
   <jsp:scriptlet><![CDATA[
 final MimeMessage message = (MimeMessage)request.getAttribute("message");
-final String contentType = message.getContentType().
-  toLowerCase().replaceAll(";.+$", "").trim();
+String contentType = message.getContentType().toLowerCase();
+int index = contentType.indexOf(';');
+if (index != -1) {
+    contentType = contentType.substring(0, index);
+}
+contentType = contentType.trim();
 pageContext.setAttribute("contentType", contentType);
   ]]></jsp:scriptlet>
 
