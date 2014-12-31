@@ -60,7 +60,7 @@ public class SMTPServlet extends HttpServlet {
                 new XMLResourceBundle.Control();
         request.setAttribute("devpostMessage", 
                 new LocalizationContext(
-                ResourceBundle.getBundle("message",
+                ResourceBundle.getBundle("devpost/message",
                 request.getLocale(), control) ) );
         
         try {

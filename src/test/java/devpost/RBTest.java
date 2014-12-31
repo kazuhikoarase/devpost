@@ -12,7 +12,7 @@ public class RBTest {
     public void rb_en() {
         ResourceBundle.Control control =
                 new XMLResourceBundle.Control();
-        ResourceBundle rb = ResourceBundle.getBundle("message",
+        ResourceBundle rb = ResourceBundle.getBundle("devpost/message",
                 Locale.ENGLISH, control);
         Assert.assertEquals("Subject", rb.getString("msg.subject") );
     }
@@ -21,7 +21,7 @@ public class RBTest {
     public void rb_ja() {
         ResourceBundle.Control control =
                 new XMLResourceBundle.Control();
-        ResourceBundle rb = ResourceBundle.getBundle("message",
+        ResourceBundle rb = ResourceBundle.getBundle("devpost/message",
                 Locale.JAPANESE, control);
         Assert.assertEquals("件名", rb.getString("msg.subject") );
     }
