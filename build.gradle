@@ -21,9 +21,9 @@ repositories {
 
 dependencies {
     providedCompile 'javax.servlet:javax.servlet-api:3.0.1'
-    providedCompile "javax.servlet:jsp-api:2.0"
+    providedCompile 'javax.servlet:jsp-api:2.0'
     compile 'javax.mail:mail:1.4'
-    compile "javax.servlet:jstl:1.2"
-    testCompile "junit:junit:4.11"
+    compile 'javax.servlet:jstl:1.2'
+    testCompile 'junit:junit:4.11'
 }
 
