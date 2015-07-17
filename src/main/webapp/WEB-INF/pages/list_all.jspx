@@ -63,6 +63,12 @@
           <c:forEach var="msgEntry" items="${groupMboxEntrySet}" varStatus="msgStat">
             <c:set var="msg" value="${msgEntry.value[0]}"/>
             <c:set var="rcptTo"><c:out value="${msgEntry.key}"/></c:set>
+            <c:set var="rcptToDisp">
+               <c:out value="${msgEntry.key}"/>
+               <jsp:text> (</jsp:text>
+               <c:out value="${fn:length(msgEntry.value) }"/>
+               <jsp:text>)</jsp:text>
+            </c:set>
             <tr class="rcptTo row${msgStat.index mod 2}" rcptTo="${rcptTo}" >
               <td>
                   <c:out value="${msg.serverAddr}"/>
@@ -74,13 +80,8 @@
               </td>
               <td class="msg-subject"><c:out value="${msg.subject}"/></td>
               <td><c:out value="${msg.sentDate}"/></td>
-              <td>
-                <c:forEach var="user" items="${msg.rcptTo}">
-                  <c:out value="${user.address}"/>
-                  <jsp:text> (</jsp:text>
-                  <c:out value="${fn:length(msgEntry.value) }"/>
-                  <jsp:text>)</jsp:text>
-                </c:forEach>
+              <td title="${rcptToDisp}">
+                <c:out value="${rcptToDisp}" escapeXml="false" />
               </td>
             </tr>
           </c:forEach>

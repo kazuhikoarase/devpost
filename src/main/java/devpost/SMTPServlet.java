@@ -9,13 +9,15 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 
+import javax.mail.Address;
 import javax.mail.Message.RecipientType;
-import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -80,6 +82,7 @@ public class SMTPServlet extends HttpServlet {
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected void list(
         HttpServletRequest request,
         HttpServletResponse response
@@ -100,27 +103,26 @@ public class SMTPServlet extends HttpServlet {
                 } else {
                     item.put("sentDate", ""); 
                 }
-                String[] serverAddr = msg.getHeader("X-Server-Addr");
+                String[] serverAddr = msg.getHeader(Constants.X_SERVER_ADDR);
                 if (serverAddr != null && serverAddr.length > 0) {
                     item.put("serverAddr", serverAddr[0]);
                 }
                 item.put("subject", msg.getSubject() );
                 item.put("from", msg.getFrom() );
-                item.put("rcptTo", msg.getRecipients(RecipientType.TO) );
+                item.put("rcptTo", getAllRecipients(msg) );
                 mbox.add(item);
             } catch(Exception e) {
                 // ignore
             }
         }
-        
+
         Map<String, List<Map<String, Object>>> groupMbox = new LinkedHashMap<String, List<Map<String,Object>>>();
         for (Map<String, Object> item : mbox) {
-            for (InternetAddress rcptTo : (InternetAddress[])item.get("rcptTo") ) {
-                String key = rcptTo.getAddress().toLowerCase();
-                if (!groupMbox.containsKey(key) ) {
-                    groupMbox.put(key, new ArrayList<Map<String, Object>>());
+            for (String rcptTo : (Set<String>)item.get("rcptTo") ) {
+                if (!groupMbox.containsKey(rcptTo) ) {
+                    groupMbox.put(rcptTo, new ArrayList<Map<String, Object>>());
                 }
-                groupMbox.get(key).add(item);
+                groupMbox.get(rcptTo).add(item);
             }
         }
         request.setAttribute("port", port);
@@ -131,7 +133,31 @@ public class SMTPServlet extends HttpServlet {
             forward(request, response);
     }
 
+    protected Set<String> getAllRecipients(MimeMessage msg) throws Exception {
+        Set<String> rcpts = new HashSet<String>();
+        String[] xRcpts = msg.getHeader(Constants.X_RECIPIENTS);
+        if (xRcpts != null && xRcpts.length > 0) {
+            for (String rcpt : xRcpts[0].split(",") ) {
+                rcpts.add(rcpt);
+            }
+            return rcpts;
+        }
+        addRecipients(rcpts, msg.getRecipients(RecipientType.TO) );
+        addRecipients(rcpts, msg.getRecipients(RecipientType.CC) );
+        addRecipients(rcpts, msg.getRecipients(RecipientType.BCC) );
+        return rcpts;
+    }
+
+    private void addRecipients(Set<String> rcpts, Address[] addrs) {
+        if (addrs != null) {
+            for (Address addr : addrs) {
+                rcpts.add(addr.toString().toLowerCase() );
+            }
+        }
+    }
+
     protected void view(
+            
         HttpServletRequest request,
         HttpServletResponse response
     ) throws Exception {

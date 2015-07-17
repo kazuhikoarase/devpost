@@ -10,6 +10,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
@@ -19,15 +21,17 @@ import javax.mail.internet.MimeMessage;
  * @author Kazuhiko Arase
  */
 public class SMTPConnection implements Runnable {
-    
+
     private final Logger logger = Logger.getLogger(getClass().getName() );
-    
+
     private final Socket socket;
     private final Session session;
     private final File mboxDir;
-    
+
     private PlainTextReader in;
     private PlainTextWriter out;
+
+    private StringBuilder recipients;
 
     public SMTPConnection(
         final Socket socket,
@@ -66,9 +70,11 @@ public class SMTPConnection implements Runnable {
 
         final String domain = InetAddress.getLocalHost().getHostName();
 
+        recipients = new StringBuilder();
+
         String line;
         String[] cmd;
-
+        Pattern rcptPat = Pattern.compile("\\s*<\\s*([^\\s>]+)\\s*>\\s*");
         println("220 " + domain + " Service ready");
 
         while ( (line = readLine() ) != null) {
@@ -84,6 +90,17 @@ public class SMTPConnection implements Runnable {
                     // disconnected.
                 }
                 break;
+            } else if ("RCPT".equals(cmd[0]) ) {
+                Matcher mat = rcptPat.matcher(cmd[1]);
+                if (mat.find() ) {
+                    if (recipients.length() > 0) {
+                        recipients.append(',');
+                    }
+                    recipients.append(mat.group(1).toLowerCase() );
+                    println("250 OK");
+                } else {
+                    println("550 Failure");
+                }
             } else {
                 // always positive
                 println("250 OK");
@@ -109,8 +126,10 @@ public class SMTPConnection implements Runnable {
         if (msg.getSentDate() == null) {
             //msg.setSentDate(new Date() );
         }
-        msg.setHeader("X-Server-Addr",
+        msg.setHeader(Constants.X_SERVER_ADDR,
                 socket.getInetAddress().getHostAddress() );
+        msg.setHeader(Constants.X_RECIPIENTS,
+                recipients.toString() );
         saveMessage(msg);
     }
 

@@ -63,6 +63,9 @@ public class SendTest {
         msg.setReplyTo(InternetAddress.parse("reply@example.com", false) );
         msg.setRecipients(Message.RecipientType.TO,
                 InternetAddress.parse("testuser_en@example.com", false) );
+        msg.setRecipients(Message.RecipientType.BCC,
+                InternetAddress.parse("testuser_en_bcc1@example.com," +
+                        "testuser_en_bcc2@example.com", false) );
         msg.setSentDate(getSentDate(1) );
         msg.setSubject(
                 "longlonglonglonglonglonglonglong" + 
