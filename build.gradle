@@ -7,6 +7,12 @@ sourceCompatibility = 1.6
 compileJava.options.encoding = 'UTF-8'
 compileTestJava.options.encoding = 'UTF-8'
 
+eclipse {
+  classpath {
+    defaultOutputDir = file('target/classes')
+  }
+}
+
 uploadArchives {
     repositories {
        flatDir {
